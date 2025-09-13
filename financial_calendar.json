@@ -1,0 +1,197 @@
+{
+  "THYAO": {
+    "company_name": "THYAO",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "temettü",
+        "date": "2025-08-10",
+        "description": "2024 Yılı Temettü Ödemesi",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "KCHOL": {
+    "company_name": "KCHOL",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "temettü",
+        "date": "2025-08-05",
+        "description": "2024 Yılı Temettü Ödemesi",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "GARAN": {
+    "company_name": "GARAN",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "temettü",
+        "date": "2025-07-15",
+        "description": "2024 Yılı Temettü Ödemesi",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "AKBNK": {
+    "company_name": "AKBNK",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "temettü",
+        "date": "2025-07-20",
+        "description": "2024 Yılı Temettü Ödemesi",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "ISCTR": {
+    "company_name": "ISCTR",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "temettü",
+        "date": "2025-07-25",
+        "description": "2024 Yılı Temettü Ödemesi",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "SAHOL": {
+    "company_name": "SAHOL",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "ASELS": {
+    "company_name": "ASELS",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  },
+  "EREGL": {
+    "company_name": "EREGL",
+    "events": [
+      {
+        "type": "bilanço",
+        "date": "2025-09-30",
+        "description": "2025 Yılı 3. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      },
+      {
+        "type": "bilanço",
+        "date": "2025-12-31",
+        "description": "2025 Yılı 4. Çeyrek Bilanço",
+        "source": "Varsayılan",
+        "status": "bekliyor"
+      }
+    ],
+    "last_update": "2025-08-13"
+  }
+}
