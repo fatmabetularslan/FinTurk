@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 import time
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
+from plotly.subplots import make_subplotsp
 
 # Load environment variables - Streamlit Cloud için
 try:
@@ -114,7 +114,7 @@ except Exception as e:
 
 # Streamlit sayfa konfigürasyonu
 st.set_page_config(
-    page_title="KCHOL Finansal Asistan",
+    page_title="FınTurk Finansal Asistan",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -1520,3 +1520,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
