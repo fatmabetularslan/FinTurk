@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 import json
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 import google.generativeai as genai
 from document_rag_agent import DocumentRAGAgent
 from technical_analysis import TechnicalAnalysisEngine
@@ -23,8 +22,13 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 
-# Load environment variables
-load_dotenv()
+# Load environment variables - Streamlit Cloud için
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    pass
 
 # Configure Gemini API
 GEMINI_API_KEY = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
