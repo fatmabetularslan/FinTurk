@@ -8,8 +8,15 @@ import os
 import json
 import requests
 from datetime import datetime
-from dotenv import load_dotenv
 import google.generativeai as genai
+
+# Load environment variables - Streamlit Cloud için
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    pass
 from typing import List, Dict, Optional, Tuple
 import yfinance as yf
 import pandas as pd
