@@ -10,7 +10,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import google.generativeai as genai
-from dotenv import load_dotenv
+# Load environment variables - Streamlit Cloud için
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    pass
 import logging
 from finta import TA
 import requests
