@@ -7,12 +7,16 @@ import numpy as np
 from datetime import datetime, timedelta
 import re
 import os
-from dotenv import load_dotenv
+# Load environment variables - Streamlit Cloud için
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    pass
 import google.generativeai as genai
 from finta import TA
 
-# Load environment variables
-load_dotenv()
 
 # Configure Gemini API
 GEMINI_API_KEY = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
