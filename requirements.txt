@@ -1,4 +1,4 @@
-Flask>=2.3.0
+streamlit>=1.28.0
 yfinance>=0.2.0
 pandas>=1.5.0
 numpy>=1.21.0
@@ -18,3 +18,5 @@ scipy>=1.10.0
 dateparser
 beautifulsoup4>=4.11.0
 lxml>=4.9.0
+textblob>=0.17.1
+python-dotenv>=1.0.0
