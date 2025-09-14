@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 import time
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplotsp
+from plotly.subplots import make_subplots
 
 # Load environment variables - Streamlit Cloud için
 try:
@@ -719,7 +719,7 @@ def predict_price(model, df):
 
 # Ana sayfa - Chatbot
 def main_page():
-    st.markdown('<h1 class="main-header">🤖 BIST Finansal Asistan</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🤖 FınTurk Finansal Asistan</h1>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; color: #666; font-size: 1.2rem; margin-bottom: 2rem;">Tüm BIST hisse senetleri için akıllı analiz ve yatırım tavsiyeleri</p>', unsafe_allow_html=True)
     
     # Sidebar - Hızlı Erişim
@@ -1520,4 +1520,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
