@@ -7,11 +7,15 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin, urlparse
 import google.generativeai as genai
-from dotenv import load_dotenv
+# Load environment variables - Streamlit Cloud için
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    pass
 import logging
 
-# Load environment variables
-load_dotenv()
 
 class WebSearchAgent:
     def __init__(self):
