@@ -107,34 +107,7 @@ Modern Streamlit arayüzü ile kullanıcı dostu deneyim sunan platform, teknik 
 - **Log Sistemi**: Detaylı işlem kayıtları ve debug bilgileri
 - **Çevre Değişkenleri**: Güvenli API anahtarı yönetimi
 
-## Teknik Detaylar
 
-### Kullanılan Teknolojiler
-- **Frontend Framework**: Streamlit (Python)
-- **Makine Öğrenmesi**: XGBoost, Scikit-learn
-- **Veri Analizi**: Pandas, NumPy, yfinance
-- **Teknik Analiz**: Finta, TA-Lib
-- **Yapay Zeka**: Google Gemini AI
-- **RAG Sistemi**: Document processing ve vector indexing
-- **AI Agents**: Özelleştirilmiş finansal analiz agent'ları
-- **Veritabanı**: SQLite
-- **Grafik**: Plotly, Matplotlib
-- **Web Scraping**: BeautifulSoup, Requests
-- **Sentiment Analysis**: TextBlob
-- **Environment Management**: python-dotenv
-
-
-## 🚀 Kurulum ve Çalıştırma
-
-### Gereksinimler
-- Python 3.8+
-- pip paket yöneticisi
-- Google Gemini API anahtarı
-- News API anahtarı (opsiyonel)
-
-
-
-```
 
 ## 💡 Kullanım Örnekleri
 
