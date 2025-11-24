@@ -1153,7 +1153,7 @@ def main_page():
             st.markdown(f'<div class="chat-message bot-message"><strong>Asistan:</strong> {message["message"]}</div>', unsafe_allow_html=True)
     
     # Chat input
-    input_col, button_col = st.columns([8, 1])
+    input_col, button_col = st.columns([7.5, 2.5])
     
     with input_col:
         chat_input = st.text_input(
@@ -1164,28 +1164,31 @@ def main_page():
         )
     
     with button_col:
-        st.markdown("""
-        <style>
-        div[data-testid="chat-send"] button {
-            background-color: #d4d4d4 !important;
-            border-radius: 50% !important;
-            height: 36px !important;
-            width: 36px !important;
-            margin-top: 1.5rem !important;
-            border: 1px solid #c5c5c5 !important;
-            padding: 0 !important;
-            font-size: 1.2rem !important;
-            color: #111 !important;
-        }
-        div[data-testid="chat-send"] button:hover {
-            background-color: #c5c5c5 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        st.markdown('<div data-testid="chat-send" style="text-align:center;">', unsafe_allow_html=True)
-        send_button = st.button("↑", key="send_message", help="Gönder")
-        st.markdown('</div>', unsafe_allow_html=True)
-        clear_button = st.button("Temizle", key="clear_chat")
+        send_col, clear_col = st.columns([1, 2.2])
+        with send_col:
+            st.markdown("""
+            <style>
+            div[data-testid="chat-send"] button {
+                background-color: #d4d4d4 !important;
+                border-radius: 50% !important;
+                height: 36px !important;
+                width: 36px !important;
+                margin-top: 1.5rem !important;
+                border: 1px solid #c5c5c5 !important;
+                padding: 0 !important;
+                font-size: 1.2rem !important;
+                color: #111 !important;
+            }
+            div[data-testid="chat-send"] button:hover {
+                background-color: #c5c5c5 !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            st.markdown('<div data-testid="chat-send" style="text-align:center;">', unsafe_allow_html=True)
+            send_button = st.button("↑", key="send_message", help="Gönder")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with clear_col:
+            clear_button = st.button("Sohbeti Temizle", key="clear_chat", use_container_width=True)
     
     # Mesaj gönderme
     trigger_message = None
