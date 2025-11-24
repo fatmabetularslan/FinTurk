@@ -193,6 +193,7 @@ if 'chat_input' not in st.session_state:
 
 def handle_chat_input_change():
     st.session_state.pending_message = st.session_state.chat_input
+    st.session_state.chat_input = ""
 
 # Model yükleme
 @st.cache_resource
@@ -1160,7 +1161,6 @@ def main_page():
             'message': bot_response,
             'timestamp': datetime.now()
         })
-        st.session_state.chat_input = ""
         st.session_state.pending_message = None
         st.rerun()
     
@@ -1371,7 +1371,7 @@ Sadece sorunuzu yazın, size yardımcı olayım!"""
     
     # Selamlaşma
     elif any(word in message_lower for word in ['merhaba', 'selam', 'hi', 'hello']) and len(message.split()) <= 3:
-        return 'Merhaba! Ben KCHOL hisse senedi fiyat tahmin asistanınız. Size yardımcı olmak için buradayım. Fiyat tahmini yapmak ister misiniz?'
+        return 'Merhaba! Ben  finansal asistanınız. Size yardımcı olmak için buradayım. Fiyat tahmini yapmak ister misiniz?'
     
     # Finansal takvim soruları
     elif any(word in message_lower for word in ['bilanço', 'temettü', 'genel kurul', 'faaliyet raporu', 'ne zaman', 'tarih', 'takvim']):
