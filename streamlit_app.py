@@ -1181,6 +1181,7 @@ def main_page():
             padding: 0 !important;
             font-size: 1.2rem !important;
             color: #111 !important;
+            margin-top: 0 !important;
         }
         div[data-testid="chat-send"] button:hover {
             background-color: #c5c5c5 !important;
@@ -1189,6 +1190,7 @@ def main_page():
             height: 36px !important;
             border-radius: 18px !important;
             padding: 0 18px !important;
+            margin-top: 0 !important;
         }
         </style>
         """, unsafe_allow_html=True)
