@@ -1,5 +1,7 @@
 import json
+import re
 from copy import deepcopy
+from datetime import datetime
 
 DEFAULT_PARSED_SIMULATION = {
     "is_simulation": False,
@@ -9,6 +11,25 @@ DEFAULT_PARSED_SIMULATION = {
     "period_value": None,
     "start_date": None,
 }
+
+SIMULATION_KEYWORDS = [
+    "simülasyon",
+    "simulasyon",
+    "simulation",
+    "yatırım",
+    "yatirim",
+    "yatirsaydim",
+    "yatırsaydım",
+    "yatirsam",
+    "yatırsa",
+    "yatırsam",
+    "ne olurdu",
+    "kaç para",
+    "kac para",
+    "kazanç",
+    "kazanc",
+    "getiri",
+]
 
 PARSER_PROMPT_TEMPLATE = """
 Sen bir "Borsa Yatırım Simülasyonu Parser"ısın.
@@ -115,12 +136,109 @@ def _normalize_parsed_payload(payload: dict) -> dict:
     return normalized
 
 
+def _looks_like_simulation(user_message: str) -> bool:
+    if not user_message:
+        return False
+    msg = user_message.lower()
+    return any(keyword in msg for keyword in SIMULATION_KEYWORDS)
+
+
+def _resolve_year_reference(year: int, suffix: str) -> str:
+    suffix = suffix.lower()
+    if "son" in suffix:
+        dt = datetime(year, 12, 1)
+    else:
+        dt = datetime(year, 1, 2)
+    return dt.strftime("%Y-%m-%d")
+
+
+def _fallback_parse_simulation(user_message: str) -> dict:
+    parsed = deepcopy(DEFAULT_PARSED_SIMULATION)
+    if not user_message:
+        return parsed
+
+    if not _looks_like_simulation(user_message):
+        return parsed
+
+    parsed["is_simulation"] = True
+
+    # Ticker
+    symbol_match = re.search(r'\b([A-ZÇĞİÖŞÜ]{2,6})\b', user_message.upper())
+    if symbol_match:
+        parsed["ticker"] = symbol_match.group(1)
+
+    # Amount
+    message_lower = user_message.lower()
+    amount = None
+    bin_match = re.search(r'(\d+(?:[.,]\d+)?)\s*bin', message_lower)
+    if bin_match:
+        amount = float(bin_match.group(1).replace(',', '.')) * 1000
+    else:
+        k_match = re.search(r'(\d+(?:[.,]\d+)?)\s*k\b', message_lower)
+        if k_match:
+            amount = float(k_match.group(1).replace(',', '.')) * 1000
+    if amount is None:
+        multi_dot = re.findall(r'\d+\.\d+\.\d+', user_message)
+        if multi_dot:
+            amount = max(int(num.replace('.', '')) for num in multi_dot)
+    if amount is None:
+        dot_numbers = re.findall(r'\d+\.\d+', user_message)
+        if dot_numbers:
+            amount = max(float(num.replace('.', '')) for num in dot_numbers)
+    if amount is None:
+        plain_numbers = re.findall(r'\d+', user_message)
+        if plain_numbers:
+            amount = max(int(num) for num in plain_numbers)
+    if amount:
+        parsed["amount_try"] = float(amount)
+
+    # Period / date
+    period_match = re.search(r'(\d+)\s*(ay|yıl|yil|hafta|gün|gun)\s*önce', message_lower)
+    if period_match:
+        value = float(period_match.group(1))
+        unit = period_match.group(2)
+        if unit in ['ay']:
+            parsed["period_type"] = "months"
+        elif unit in ['yıl', 'yil']:
+            parsed["period_type"] = "years"
+        elif unit in ['hafta']:
+            parsed["period_type"] = "days"
+            value *= 7
+        else:
+            parsed["period_type"] = "days"
+        parsed["period_value"] = value
+    else:
+        date_match = re.search(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})', user_message)
+        if date_match:
+            try:
+                year, month, day = map(int, date_match.groups())
+                parsed["period_type"] = "date"
+                parsed["start_date"] = datetime(year, month, day).strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+        else:
+            year_phrase = re.search(r'(\d{4})\s*(başında|basinda|başı|basi|sonunda|sonu)', message_lower)
+            if year_phrase:
+                year = int(year_phrase.group(1))
+                suffix = year_phrase.group(2)
+                parsed["period_type"] = "date"
+                parsed["start_date"] = _resolve_year_reference(year, suffix)
+
+    return parsed
+
+
 def parse_simulation_query(user_message: str, llm_model=None) -> dict:
     """
     LLM kullanarak simülasyon isteğini JSON formatında ayrıştır.
+    Gemini/OpenAI gibi bir model yoksa kural tabanlı fallback devreye girer.
     """
-    if not user_message or not llm_model:
+    if not user_message:
         return deepcopy(DEFAULT_PARSED_SIMULATION)
+
+    fallback_result = _fallback_parse_simulation(user_message)
+
+    if not llm_model:
+        return fallback_result
 
     prompt = build_simulation_parser_prompt(user_message)
 
@@ -129,10 +247,13 @@ def parse_simulation_query(user_message: str, llm_model=None) -> dict:
         response_text = response.text.strip()
         json_block = _extract_json_block(response_text)
         if not json_block:
-            return deepcopy(DEFAULT_PARSED_SIMULATION)
+            return fallback_result
         payload = json.loads(json_block)
-        return _normalize_parsed_payload(payload)
+        normalized = _normalize_parsed_payload(payload)
+        if not normalized["is_simulation"] and fallback_result["is_simulation"]:
+            return fallback_result
+        return normalized
     except Exception as exc:
         print(f"Simülasyon parser LLM hatası: {exc}")
-        return deepcopy(DEFAULT_PARSED_SIMULATION)
+        return fallback_result
 
