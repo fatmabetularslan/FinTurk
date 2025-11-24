@@ -13,19 +13,46 @@ import json
 import subprocess
 import tempfile
 import os
+import re
 from datetime import datetime, timedelta
 from finta import TA
 import warnings
 warnings.filterwarnings('ignore')
 
 # Gemini API anahtarını ayarla (environment variable'dan al)
-import os
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
 if GOOGLE_API_KEY:
     genai.configure(api_key=GOOGLE_API_KEY)
     print(f"✅ Gemini API anahtarı yüklendi: {GOOGLE_API_KEY[:10]}...")
 else:
     print("⚠️  Gemini API anahtarı bulunamadı. .env dosyasında GOOGLE_API_KEY veya GEMINI_API_KEY tanımlayın.")
+
+SUPPORTED_SYMBOLS = [
+    "KCHOL",
+    "THYAO",
+    "GARAN",
+    "AKBNK",
+    "ASELS",
+    "EREGL",
+    "SASA",
+    "ISCTR",
+    "BIMAS",
+    "ALARK",
+    "TUPRS",
+    "PGSU",
+    "KRMD",
+    "TAVHL",
+    "DOAS",
+    "TOASO",
+    "FROTO",
+    "VESTL",
+    "YAPI",
+    "QNBFB",
+    "HALKB",
+    "VAKBN",
+    "SISE",
+    "KERVN",
+]
 
 class TechnicalAnalysisEngine:
     def __init__(self):
@@ -35,6 +62,27 @@ class TechnicalAnalysisEngine:
                 self.model = genai.GenerativeModel('gemini-1.5-flash')
             except Exception as e:
                 print(f"Gemini model yüklenirken hata: {e}")
+    
+    def extract_symbol(self, user_request: str) -> str:
+        """Kullanıcı isteğinden hisse kodunu çıkar (varsayılan KCHOL.IS)."""
+        default_symbol = "KCHOL.IS"
+        if not user_request:
+            return default_symbol
+        
+        request_upper = user_request.upper()
+        
+        # Önce desteklenen sembolleri ara
+        for symbol in SUPPORTED_SYMBOLS:
+            if symbol in request_upper.replace(".IS", ""):
+                return f"{symbol}.IS"
+        
+        # Genel regex yakalama
+        match = re.search(r'\b([A-ZÇĞİÖŞÜ]{3,6})(?:\.IS)?\b', request_upper)
+        if match:
+            raw_symbol = match.group(1)
+            return f"{raw_symbol}.IS"
+        
+        return default_symbol
     
     def get_stock_data(self, symbol='KCHOL.IS', days=300):
         """Hisse verisi al ve teknik indikatörleri hesapla"""
@@ -210,7 +258,7 @@ Kod:
         except Exception as e:
             return None, f"Kod çalıştırma hatası: {e}"
     
-    def create_default_charts(self, df):
+    def create_default_charts(self, df, symbol_label="KCHOL"):
         """Varsayılan teknik analiz grafikleri oluştur"""
         try:
             charts = []
@@ -234,7 +282,7 @@ Kod:
                 ax1.plot(df.index, df['SMA50'], color='blue', linewidth=1, label='SMA 50')
                 ax1.plot(df.index, df['SMA200'], color='red', linewidth=1, label='SMA 200')
                 
-                ax1.set_title('KCHOL Teknik Analiz - Fiyat ve Hareketli Ortalamalar', color='white', fontsize=14)
+                ax1.set_title(f'{symbol_label} Teknik Analiz - Fiyat ve Hareketli Ortalamalar', color='white', fontsize=14)
                 ax1.set_ylabel('Fiyat (TL)', color='white')
                 ax1.legend()
                 ax1.grid(True, alpha=0.3)
@@ -897,7 +945,7 @@ Kod:
             print(f"Hacim grafik oluşturma hatası: {e}")
             return []
     
-    def create_price_chart(self, df):
+    def create_price_chart(self, df, symbol_label="KCHOL"):
         """Sadece fiyat grafiği oluştur"""
         try:
             charts = []
@@ -915,7 +963,7 @@ Kod:
                 ax.plot(df.index, df['close'], color='white', linewidth=2, label='Fiyat')
                 
                 # Grafik ayarları
-                ax.set_title('KCHOL Fiyat Grafiği', color='white', fontsize=14, fontweight='bold')
+                ax.set_title(f'{symbol_label} Fiyat Grafiği', color='white', fontsize=14, fontweight='bold')
                 ax.set_xlabel('Tarih', color='white', fontsize=12)
                 ax.set_ylabel('Fiyat (TL)', color='white', fontsize=12)
                 ax.grid(True, alpha=0.3)
@@ -951,7 +999,7 @@ Kod:
                 img_base64 = "<div style='color:red; padding:20px; text-align:center;'>Fiyat Grafik yüklenemedi</div>"
             
             charts.append({
-                "title": "KCHOL Fiyat Grafiği",
+                "title": f"{symbol_label} Fiyat Grafiği",
                 "type": "line",
                 "data": img_base64
             })
@@ -962,7 +1010,7 @@ Kod:
             print(f"Fiyat grafik oluşturma hatası: {e}")
             return []
     
-    def analyze_technical_indicators(self, df):
+    def analyze_technical_indicators(self, df, symbol_label="KCHOL"):
         """Teknik indikatörleri analiz et"""
         try:
             current_price = df['close'].iloc[-1]
@@ -1020,7 +1068,7 @@ Kod:
             strategy_recommendations = self.generate_investment_strategy(df, current_rsi, macd_signal, sma_signal, bb_signal, volatility_signal)
             
             analysis = f"""
-**KCHOL Teknik Analiz Raporu**
+**{symbol_label} Teknik Analiz Raporu**
 
 💰 **Fiyat Bilgileri:**
 • Mevcut Fiyat: {current_price:.2f} TL
@@ -1390,8 +1438,10 @@ Kod:
     def process_technical_analysis_request(self, user_request):
         """Teknik analiz isteğini işle"""
         try:
+            symbol = self.extract_symbol(user_request)
+            symbol_label = symbol.replace('.IS', '')
             # Hisse verisi al
-            df = self.get_stock_data()
+            df = self.get_stock_data(symbol)
             if df is None:
                 return {
                     "error": "Hisse verisi alınamadı",
@@ -1403,15 +1453,18 @@ Kod:
             # Gemini ile kullanıcı isteğini analiz et
             if self.model:
                 try:
-                    analysis_result = self.analyze_request_with_gemini(user_request, df)
+                    analysis_result = self.analyze_request_with_gemini(user_request, df, symbol_label)
                     if analysis_result:
+                        analysis_result['symbol'] = symbol_label
                         return analysis_result
                 except Exception as e:
                     print(f"Gemini analiz hatası: {e}")
                     # Fallback to rule-based analysis
             
             # Fallback: Rule-based analiz
-            return self.rule_based_analysis(user_request, df)
+            fallback_result = self.rule_based_analysis(user_request, df, symbol_label)
+            fallback_result['symbol'] = symbol_label
+            return fallback_result
             
         except Exception as e:
             return {
@@ -1421,7 +1474,7 @@ Kod:
                 "summary": ""
             }
     
-    def analyze_request_with_gemini(self, user_request, df):
+    def analyze_request_with_gemini(self, user_request, df, symbol_label):
         """Gemini ile kullanıcı isteğini analiz et"""
         try:
             # Mevcut teknik verileri hazırla
@@ -1502,11 +1555,11 @@ Eğer kullanıcı genel bir analiz istiyorsa FULL_ANALYSIS seç.
                         charts.extend(self.create_volume_chart(df))
                         analysis_text += self.analyze_volume(df) + "\n\n"
                     elif analysis == "PRICE_ANALYSIS":
-                        charts.extend(self.create_price_chart(df))
+                        charts.extend(self.create_price_chart(df, symbol_label))
                         analysis_text += self.analyze_price(df) + "\n\n"
                     elif analysis == "FULL_ANALYSIS":
-                        charts.extend(self.create_default_charts(df))
-                        analysis_text += self.analyze_technical_indicators(df)
+                        charts.extend(self.create_default_charts(df, symbol_label))
+                        analysis_text += self.analyze_technical_indicators(df, symbol_label)
                 
                 return {
                     "charts": charts,
@@ -1523,7 +1576,7 @@ Eğer kullanıcı genel bir analiz istiyorsa FULL_ANALYSIS seç.
             print(f"Gemini analiz hatası: {e}")
             return None
     
-    def rule_based_analysis(self, user_request, df):
+    def rule_based_analysis(self, user_request, df, symbol_label):
         """Rule-based analiz (fallback)"""
         user_request_lower = user_request.lower()
         
@@ -1554,15 +1607,15 @@ Eğer kullanıcı genel bir analiz istiyorsa FULL_ANALYSIS seç.
             summary = "Hacim analizi tamamlandı."
             
         elif any(word in user_request_lower for word in ['fiyat', 'price', 'mum', 'candlestick']):
-            charts = self.create_price_chart(df)
+            charts = self.create_price_chart(df, symbol_label)
             analysis = self.analyze_price(df)
             summary = "Fiyat analizi tamamlandı."
             
         else:
             # Genel teknik analiz - tüm grafikleri getir
-            charts = self.create_default_charts(df)
-            analysis = self.analyze_technical_indicators(df)
-            summary = f"KCHOL hisse senedi teknik analizi tamamlandı. {len(charts)} grafik oluşturuldu."
+            charts = self.create_default_charts(df, symbol_label)
+            analysis = self.analyze_technical_indicators(df, symbol_label)
+            summary = f"{symbol_label} hisse senedi teknik analizi tamamlandı. {len(charts)} grafik oluşturuldu."
         
         return {
             "charts": charts,
