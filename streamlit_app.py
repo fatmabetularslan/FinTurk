@@ -137,7 +137,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     body, .main, .block-container {
-        background-color: #F5F6FA !important;
+        background-color: #E4E6ED !important;
     }
     .main-header {
         font-size: 2.5rem;
@@ -1167,7 +1167,7 @@ def main_page():
         st.markdown("""
         <style>
         div.chat-send button {
-            background-color: #ff4f58 !important;
+            background-color: #1f2937 !important;
             color: #fff !important;
             border-radius: 8px !important;
             height: 2.5rem !important;
@@ -1175,7 +1175,7 @@ def main_page():
             margin-top: 1.8rem !important;
         }
         div.chat-send button:hover {
-            opacity: 0.9 !important;
+            opacity: 0.85 !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -1776,4 +1776,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
