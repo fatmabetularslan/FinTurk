@@ -28,7 +28,7 @@ try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
-    # Streamlit Cloud'da dotenv yoksa environment variables kullan
+    
     pass
 
 
@@ -187,6 +187,8 @@ if 'portfolio_data' not in st.session_state:
     st.session_state.portfolio_data = {}
 if 'pending_message' not in st.session_state:
     st.session_state.pending_message = None
+if 'chat_input' not in st.session_state:
+    st.session_state.chat_input = ""
 
 
 def handle_chat_input_change():
@@ -1137,9 +1139,8 @@ def main_page():
         clear_button = st.button("Temizle", key="clear_chat")
     
     # Mesaj gönderme
-    pending_message = st.session_state.pending_message
-    trigger_message = chat_input if send_button else pending_message
-    
+    trigger_message = st.session_state.pending_message if st.session_state.pending_message else chat_input if send_button else None
+
     if trigger_message and trigger_message.strip():
         st.session_state.chat_history.append({
             'sender': 'user',
