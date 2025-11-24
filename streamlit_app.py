@@ -240,6 +240,210 @@ Lütfen aşağıdaki kurallara uygun olarak yanıt ver:
         print(f"Gemini API hatası: {e}")
         return None
 
+
+# Haber analizi yardımcıları
+def get_news_articles(base_query="KCHOL", days=7):
+    try:
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days)
+
+        search_queries = [
+            base_query,
+            f"{base_query} haber",
+            "Koç Holding",
+            "Arçelik",
+            "Tofaş",
+            "Ford Otosan",
+            "Yapı Kredi",
+        ]
+
+        all_articles = []
+
+        for search_query in search_queries:
+            params = {
+                'q': search_query,
+                'sortBy': 'publishedAt',
+                'from': start_date.strftime('%Y-%m-%d'),
+                'to': end_date.strftime('%Y-%m-%d'),
+                'language': 'tr',
+                'apiKey': NEWS_API_KEY,
+                'pageSize': 10
+            }
+
+            response = requests.get(NEWS_API_URL, params=params, timeout=15)
+
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                for article in articles:
+                    article['source_company'] = search_query
+                all_articles.extend(articles)
+            else:
+                print(f"News API hatası ({search_query}): {response.status_code}")
+                print(f"Response: {response.text}")
+
+        unique_articles = []
+        seen_urls = set()
+
+        for article in all_articles:
+            url = article.get('url')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                unique_articles.append(article)
+
+        print(f"Haber analizi için {len(unique_articles)} benzersiz makale bulundu.")
+        return unique_articles
+    except Exception as e:
+        print(f"Haber alma hatası: {e}")
+        return []
+
+
+def analyze_sentiment(text):
+    try:
+        blob = TextBlob(text)
+        sentiment_score = blob.sentiment.polarity
+
+        if sentiment_score > 0.1:
+            return 'positive', sentiment_score
+        elif sentiment_score < -0.1:
+            return 'negative', sentiment_score
+        else:
+            return 'neutral', sentiment_score
+    except Exception as e:
+        print(f"Sentiment analizi hatası: {e}")
+        return 'neutral', 0.0
+
+
+def analyze_news_sentiment(articles):
+    if not articles:
+        return {
+            'total_articles': 0,
+            'positive_count': 0,
+            'negative_count': 0,
+            'neutral_count': 0,
+            'overall_sentiment': 'neutral',
+            'sentiment_score': 0.0,
+            'key_articles': [],
+            'company_breakdown': {}
+        }
+
+    sentiment_results = []
+    positive_count = negative_count = neutral_count = 0
+    total_sentiment = 0.0
+    company_breakdown = {}
+
+    for article in articles[:20]:
+        title = article.get('title', '')
+        description = article.get('description', '')
+        content = article.get('content', '')
+        source_company = article.get('source_company', 'Unknown')
+
+        full_text = f"{title} {description} {content}"
+        clean_text = re.sub(r'<[^>]+>', '', full_text)
+
+        sentiment, score = analyze_sentiment(clean_text)
+
+        if sentiment == 'positive':
+            positive_count += 1
+        elif sentiment == 'negative':
+            negative_count += 1
+        else:
+            neutral_count += 1
+
+        total_sentiment += score
+
+        if source_company not in company_breakdown:
+            company_breakdown[source_company] = {
+                'count': 0,
+                'positive': 0,
+                'negative': 0,
+                'neutral': 0,
+                'total_score': 0.0
+            }
+
+        breakdown = company_breakdown[source_company]
+        breakdown['count'] += 1
+        breakdown['total_score'] += score
+        if sentiment == 'positive':
+            breakdown['positive'] += 1
+        elif sentiment == 'negative':
+            breakdown['negative'] += 1
+        else:
+            breakdown['neutral'] += 1
+
+        sentiment_results.append({
+            'title': title,
+            'sentiment': sentiment,
+            'score': score,
+            'url': article.get('url', ''),
+            'published_at': article.get('publishedAt', ''),
+            'source': article.get('source', {}).get('name', ''),
+            'source_company': source_company
+        })
+
+    avg_sentiment = total_sentiment / len(sentiment_results) if sentiment_results else 0.0
+    if avg_sentiment > 0.1:
+        overall_sentiment = 'positive'
+    elif avg_sentiment < -0.1:
+        overall_sentiment = 'negative'
+    else:
+        overall_sentiment = 'neutral'
+
+    key_articles = sorted(sentiment_results, key=lambda x: abs(x['score']), reverse=True)[:5]
+
+    return {
+        'total_articles': len(sentiment_results),
+        'positive_count': positive_count,
+        'negative_count': negative_count,
+        'neutral_count': neutral_count,
+        'overall_sentiment': overall_sentiment,
+        'sentiment_score': avg_sentiment,
+        'key_articles': key_articles,
+        'company_breakdown': company_breakdown
+    }
+
+
+def generate_news_insights(sentiment_analysis):
+    if sentiment_analysis['total_articles'] == 0:
+        return "Son günlerde hedef hisse ile ilgili haber bulunamadı."
+
+    insights = []
+
+    if sentiment_analysis['overall_sentiment'] == 'positive':
+        insights.append("Haberler genel olarak olumlu; talep tarafında destek görebilir.")
+    elif sentiment_analysis['overall_sentiment'] == 'negative':
+        insights.append("Haberler ağırlıklı olumsuz; fiyat üzerinde baskı oluşabilir.")
+    else:
+        insights.append("Haber akışı dengeli; fiyat hareketi teknik faktörlere bağlı kalabilir.")
+
+    insights.append(
+        f"Toplam {sentiment_analysis['total_articles']} haber incelendi. "
+        f"Olumlu: {sentiment_analysis['positive_count']}, "
+        f"Olumsuz: {sentiment_analysis['negative_count']}, "
+        f"Nötr: {sentiment_analysis['neutral_count']}."
+    )
+
+    if sentiment_analysis['company_breakdown']:
+        breakdown_lines = ["\nŞirket bazında dağılım:"]
+        for company, data in sentiment_analysis['company_breakdown'].items():
+            if data['count'] == 0:
+                continue
+            avg_score = data['total_score'] / data['count']
+            sentiment_text = "Olumlu" if avg_score > 0.1 else "Olumsuz" if avg_score < -0.1 else "Nötr"
+            breakdown_lines.append(
+                f"• {company}: {data['count']} haber "
+                f"({data['positive']} olumlu, {data['negative']} olumsuz) - {sentiment_text}"
+            )
+        insights.extend(breakdown_lines)
+
+    if sentiment_analysis['key_articles']:
+        insights.append("\nÖne çıkan başlıklar:")
+        for article in sentiment_analysis['key_articles'][:3]:
+            sentiment_text = "Olumlu" if article['sentiment'] == 'positive' else "Olumsuz" if article['sentiment'] == 'negative' else "Nötr"
+            insights.append(f"- {article['title']} ({sentiment_text})")
+
+    return "\n".join(insights)
+
 # Hisse verisi alma ve özellik çıkarma
 @st.cache_data(ttl=300)  # 5 dakika cache
 def get_stock_data(symbol='KCHOL.IS', days=300):
@@ -1066,6 +1270,30 @@ Teknik analiz sonuçlarına göre, hisse senedinin **{result['predicted_price']:
 ⚠️ **RİSK UYARISI:** Bu analiz sadece teknik göstergelere dayalıdır ve yatırım tavsiyesi değildir. Hisse senedi yatırımları risklidir ve kayıplara yol açabilir."""
         
         return response
+    
+    # Haber analizi
+    elif any(word in message_lower for word in ['haber analizi', 'haber', 'news']):
+        try:
+            hisse_kodu = 'KCHOL'
+            for symbol in ['KCHOL', 'THYAO', 'GARAN', 'AKBNK', 'ASELS', 'EREGL', 'SASA', 'ISCTR', 'BIMAS', 'ALARK', 'TUPRS', 'PGSU', 'KRMD', 'TAVHL', 'DOAS', 'TOASO', 'FROTO', 'VESTL', 'YAPI', 'QNBFB', 'HALKB', 'VAKBN', 'SISE', 'KERVN']:
+                if symbol.lower() in message_lower:
+                    hisse_kodu = symbol
+                    break
+
+            articles = get_news_articles(hisse_kodu)
+            sentiment_analysis = analyze_news_sentiment(articles)
+            insights = generate_news_insights(sentiment_analysis)
+
+            response = f"""**📰 {hisse_kodu} Haber Analizi**
+
+{insights}
+
+**Sentiment Skoru:** {sentiment_analysis['sentiment_score']:.3f}
+**Genel Durum:** {sentiment_analysis['overall_sentiment'].upper()}"""
+            return response
+        except Exception as error:
+            print(f"Haber analizi hatası: {error}")
+            return 'Haber analizi yapılamadı. Lütfen daha sonra tekrar deneyin.'
     
     # Teknik analiz
     elif any(word in message_lower for word in ['teknik analiz', 'teknik', 'grafik', 'indikatör', 'rsi', 'macd']):
