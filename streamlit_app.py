@@ -1009,9 +1009,6 @@ def main_page():
         
         st.markdown("---")
         st.markdown("### 📋 Menü")
-        if st.button("⬅️ Ana Sayfa", use_container_width=True, key="sidebar_back_home"):
-            st.session_state.page = "Ana Sayfa"
-            st.rerun()
         
         if st.button("🏠 Ana Sayfa", use_container_width=True, key="menu_home"):
             st.session_state.page = "Ana Sayfa"
@@ -1430,6 +1427,9 @@ Sadece sorunuzu yazın, size yardımcı olayım!"""
 # Portföy Yönetimi Sayfası
 def portfolio_page():
     st.markdown('<h1 class="main-header">💼 Portföy Yönetimi</h1>', unsafe_allow_html=True)
+    if st.button("⬅️ Ana Sayfa", key="portfolio_back"):
+        st.session_state.page = "Ana Sayfa"
+        st.rerun()
     
     if not portfolio_manager:
         st.error("Portföy yöneticisi kullanılamıyor.")
@@ -1511,6 +1511,9 @@ def portfolio_page():
 # Finansal Takvim Sayfası
 def calendar_page():
     st.markdown('<h1 class="main-header">📅 Finansal Takvim</h1>', unsafe_allow_html=True)
+    if st.button("⬅️ Ana Sayfa", key="calendar_back"):
+        st.session_state.page = "Ana Sayfa"
+        st.rerun()
     
     if not financial_calendar:
         st.error("Finansal takvim kullanılamıyor.")
@@ -1553,6 +1556,9 @@ def calendar_page():
 # Teknik Analiz Sayfası
 def technical_analysis_page():
     st.markdown('<h1 class="main-header">📊 Teknik Analiz</h1>', unsafe_allow_html=True)
+    if st.button("⬅️ Ana Sayfa", key="technical_back"):
+        st.session_state.page = "Ana Sayfa"
+        st.rerun()
     
     if not technical_analysis_engine:
         st.error("Teknik analiz motoru kullanılamıyor.")
@@ -1622,6 +1628,9 @@ def technical_analysis_page():
 # Alarm Yönetimi Sayfası
 def alerts_page():
     st.markdown('<h1 class="main-header">🔔 Alarm Yönetimi</h1>', unsafe_allow_html=True)
+    if st.button("⬅️ Ana Sayfa", key="alerts_back"):
+        st.session_state.page = "Ana Sayfa"
+        st.rerun()
     
     if not financial_alert_system:
         st.error("Alarm sistemi kullanılamıyor.")
