@@ -136,6 +136,9 @@ st.set_page_config(
 # CSS stilleri
 st.markdown("""
 <style>
+    body, .main, .block-container {
+        background-color: #F5F6FA !important;
+    }
     .main-header {
         font-size: 2.5rem;
         font-weight: bold;
@@ -162,6 +165,7 @@ st.markdown("""
         padding: 1rem;
         border-radius: 0.5rem;
         border: 1px solid #dee2e6;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
     }
     .success-message {
         color: #28a745;
@@ -968,80 +972,37 @@ def main_page():
                 st.rerun()
         
         
-        if st.button("📈 Fiyat Tahmini", use_container_width=True, key="quick_price_prediction"):
-           
-            st.session_state.chat_history.append({
-                'sender': 'user',
-                'message': "KCHOL fiyat tahmini yap",
-                'timestamp': datetime.now()
-            })
-            
-            with st.spinner("Düşünüyorum..."):
-                bot_response = process_message("KCHOL fiyat tahmini yap")
-            
-            st.session_state.chat_history.append({
-                'sender': 'bot',
-                'message': bot_response,
-                'timestamp': datetime.now()
-            })
-            st.rerun()
-        
-        if st.button("📊 Teknik Analiz", use_container_width=True, key="quick_tech_analysis"):
-            # Doğrudan mesajı işle
-            st.session_state.chat_history.append({
-                'sender': 'user',
-                'message': "KCHOL teknik analiz yap",
-                'timestamp': datetime.now()
-            })
-            
-            with st.spinner("Düşünüyorum..."):
-                bot_response = process_message("KCHOL teknik analiz yap")
-            
-            st.session_state.chat_history.append({
-                'sender': 'bot',
-                'message': bot_response,
-                'timestamp': datetime.now()
-            })
-            st.rerun()
-        
-        if st.button("📰 Haber Analizi", use_container_width=True, key="quick_news_analysis"):
-            # Doğrudan mesajı işle
-            st.session_state.chat_history.append({
-                'sender': 'user',
-                'message': "KCHOL haber analizi yap",
-                'timestamp': datetime.now()
-            })
-            
-            with st.spinner("Düşünüyorum..."):
-                bot_response = process_message("KCHOL haber analizi yap")
-            
-            st.session_state.chat_history.append({
-                'sender': 'bot',
-                'message': bot_response,
-                'timestamp': datetime.now()
-            })
-            st.rerun()
-        
-        if st.button("💼 Portföy Simülasyonu", use_container_width=True, key="quick_portfolio_sim"):
-            # Doğrudan mesajı işle
-            st.session_state.chat_history.append({
-                'sender': 'user',
-                'message': "KCHOL'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?",
-                'timestamp': datetime.now()
-            })
-            
-            with st.spinner("Düşünüyorum..."):
-                bot_response = process_message("KCHOL'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?")
-            
-            st.session_state.chat_history.append({
-                'sender': 'bot',
-                'message': bot_response,
-                'timestamp': datetime.now()
-            })
-            st.rerun()
+        st.markdown("### 🔧 Analiz Modülleri")
+        module_buttons = [
+            ("📈 Fiyat Tahmini", "KCHOL fiyat tahmini yap", "quick_price_prediction"),
+            ("📊 Teknik Analiz", "KCHOL teknik analiz yap", "quick_tech_analysis"),
+            ("📰 Haber Analizi", "KCHOL haber analizi yap", "quick_news_analysis"),
+            ("💼 Portföy Simülasyonu", "KCHOL'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?", "quick_portfolio_sim"),
+        ]
+
+        for label, prompt, key in module_buttons:
+            if st.button(label, use_container_width=True, key=key):
+                st.session_state.chat_history.append({
+                    'sender': 'user',
+                    'message': prompt,
+                    'timestamp': datetime.now()
+                })
+
+                with st.spinner("Düşünüyorum..."):
+                    bot_response = process_message(prompt)
+
+                st.session_state.chat_history.append({
+                    'sender': 'bot',
+                    'message': bot_response,
+                    'timestamp': datetime.now()
+                })
+                st.rerun()
         
         st.markdown("---")
         st.markdown("### 📋 Menü")
+        if st.button("⬅️ Ana Sayfa", use_container_width=True, key="sidebar_back_home"):
+            st.session_state.page = "Ana Sayfa"
+            st.rerun()
         
         if st.button("🏠 Ana Sayfa", use_container_width=True, key="menu_home"):
             st.session_state.page = "Ana Sayfa"
@@ -1063,55 +1024,87 @@ def main_page():
             st.session_state.page = "Alarm Yönetimi"
             st.rerun()
     
+    st.markdown("""
+    <style>
+    .quick-analysis-card {
+        background: #f8fafc;
+        border-radius: 18px;
+        padding: 1.5rem 1.75rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+        margin-bottom: 2rem;
+    }
+    .quick-analysis-card label {
+        font-weight: 600;
+        color: #0f172a !important;
+    }
+    .chip-button button {
+        border-radius: 999px !important;
+        border: 1px solid #e2e8f0 !important;
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-size: 0.9rem !important;
+        padding: 0.35rem 0.8rem !important;
+        transition: all 0.2s ease-in-out;
+    }
+    .chip-button button:hover {
+        background-color: #0ea5e9 !important;
+        color: #ffffff !important;
+        border-color: #0ea5e9 !important;
+        box-shadow: 0 6px 14px rgba(14, 165, 233, 0.35);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Hisse seçici ve hızlı erişim
     st.markdown("### 🎯 Hızlı Analiz")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        selected_stock = st.selectbox(
-            "Hisse Seçin",
-            ["KCHOL", "THYAO", "GARAN", "AKBNK", "ASELS", "EREGL", "SASA", "ISCTR", "BIMAS", "ALARK", "TUPRS", "PGSU", "KRMD", "TAVHL", "DOAS", "TOASO", "FROTO", "VESTL", "YAPI", "QNBFB", "HALKB", "VAKBN", "SISE", "KERVN"],
-            key="stock_selector"
-        )
-    
-    with col2:
-        analysis_type = st.selectbox(
-            "Analiz Türü",
-            ["Fiyat Tahmini", "Teknik Analiz", "Haber Analizi", "Simülasyon"],
-            key="analysis_type"
-        )
-    
-    with col3:
-        if st.button("Analiz Yap", type="primary", key="quick_analysis"):
-            if analysis_type == "Fiyat Tahmini":
-                message = f"{selected_stock} fiyat tahmini yap"
-            elif analysis_type == "Teknik Analiz":
-                message = f"{selected_stock} teknik analiz yap"
-            elif analysis_type == "Haber Analizi":
-                message = f"{selected_stock} haber analizi yap"
-            elif analysis_type == "Simülasyon":
-                message = f"{selected_stock}'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?"
-            
-            # Doğrudan mesajı işle
-            st.session_state.chat_history.append({
-                'sender': 'user',
-                'message': message,
-                'timestamp': datetime.now()
-            })
-            
-            with st.spinner("Düşünüyorum..."):
-                bot_response = process_message(message)
-            
-            st.session_state.chat_history.append({
-                'sender': 'bot',
-                'message': bot_response,
-                'timestamp': datetime.now()
-            })
-            st.rerun()
+    with st.container():
+        st.markdown('<div class="quick-analysis-card">', unsafe_allow_html=True)
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            selected_stock = st.selectbox(
+                "Hisse Seçin",
+                ["KCHOL", "THYAO", "GARAN", "AKBNK", "ASELS", "EREGL", "SASA", "ISCTR", "BIMAS", "ALARK", "TUPRS", "PGSU", "KRMD", "TAVHL", "DOAS", "TOASO", "FROTO", "VESTL", "YAPI", "QNBFB", "HALKB", "VAKBN", "SISE", "KERVN"],
+                key="stock_selector"
+            )
+            analysis_type = st.selectbox(
+                "Analiz Türü",
+                ["Fiyat Tahmini", "Teknik Analiz", "Haber Analizi", "Simülasyon"],
+                key="analysis_type"
+            )
+        
+        with col2:
+            st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+            if st.button("Analiz Yap", type="primary", key="quick_analysis", use_container_width=True):
+                if analysis_type == "Fiyat Tahmini":
+                    message = f"{selected_stock} fiyat tahmini yap"
+                elif analysis_type == "Teknik Analiz":
+                    message = f"{selected_stock} teknik analiz yap"
+                elif analysis_type == "Haber Analizi":
+                    message = f"{selected_stock} haber analizi yap"
+                elif analysis_type == "Simülasyon":
+                    message = f"{selected_stock}'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?"
+                
+                st.session_state.chat_history.append({
+                    'sender': 'user',
+                    'message': message,
+                    'timestamp': datetime.now()
+                })
+                
+                with st.spinner("Düşünüyorum..."):
+                    bot_response = process_message(message)
+                
+                st.session_state.chat_history.append({
+                    'sender': 'bot',
+                    'message': bot_response,
+                    'timestamp': datetime.now()
+                })
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     
     # Örnek sorular
-    st.markdown("### 💡 Örnek Sorular")
+    st.markdown("### ⚡ Hazır Sorgular")
     
     example_questions = [
         "THYAO fiyat tahmini yap",
@@ -1122,11 +1115,11 @@ def main_page():
         "Tüm hisselerin RSI'si 70 üstü olanları listele"
     ]
     
-    cols = st.columns(2)
+    chip_cols = st.columns(3)
     for i, question in enumerate(example_questions):
-        with cols[i % 2]:
+        with chip_cols[i % 3]:
+            st.markdown('<div class="chip-button">', unsafe_allow_html=True)
             if st.button(question, key=f"example_{i}", use_container_width=True):
-                # Doğrudan mesajı işle
                 st.session_state.chat_history.append({
                     'sender': 'user',
                     'message': question,
@@ -1142,6 +1135,7 @@ def main_page():
                     'timestamp': datetime.now()
                 })
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
     
     # Chat arayüzü
     st.markdown("### 💬 Sohbet")
@@ -1158,38 +1152,39 @@ def main_page():
         "Mesajınızı yazın...",
         key="chat_input",
         placeholder="Örn: KCHOL fiyat tahmini yap, teknik analiz göster, portföy simülasyonu...",
-        value=""
+        value="",
+        on_change=lambda: st.session_state.setdefault("pending_message", st.session_state.chat_input),
     )
     
     col1, col2 = st.columns([1, 4])
     
     with col1:
-        send_button = st.button("Gönder", type="primary", key="send_message")
+        send_button = st.button("⬆️", type="primary", key="send_message")
     
     with col2:
         clear_button = st.button("Temizle", key="clear_chat")
     
     # Mesaj gönderme
-    if send_button and chat_input and len(chat_input.strip()) > 0:
-        # Kullanıcı mesajını geçmişe ekle
+    pending_message = st.session_state.pop("pending_message", None) if "pending_message" in st.session_state else None
+    trigger_message = chat_input if send_button else pending_message
+    
+    if trigger_message and trigger_message.strip():
         st.session_state.chat_history.append({
             'sender': 'user',
-            'message': chat_input,
+            'message': trigger_message.strip(),
             'timestamp': datetime.now()
         })
         
-        # Bot yanıtını oluştur
         with st.spinner("Düşünüyorum..."):
-            bot_response = process_message(chat_input)
+            bot_response = process_message(trigger_message.strip())
         
-        # Bot yanıtını geçmişe ekle
         st.session_state.chat_history.append({
             'sender': 'bot',
             'message': bot_response,
             'timestamp': datetime.now()
         })
         
-        # Sayfayı yenile (input otomatik temizlenecek)
+        st.session_state.chat_input = ""
         st.rerun()
     
     # Chat temizleme
@@ -1388,7 +1383,7 @@ Size şu konularda yardımcı olabilirim:
 **Desteklenen Hisse Senetleri:**
 KCHOL, THYAO, GARAN, AKBNK, ASELS, EREGL, SASA, ISCTR, BIMAS, ALARK, TUPRS, PGSU, KRMD, TAVHL, DOAS, TOASO, FROTO, VESTL, YAPI, QNBFB, HALKB, VAKBN, SISE, KERVN
 
-**Örnek Sorular:**
+**⚡ Hazır Sorgular:**
 • "THYAO fiyat tahmini yap"
 • "GARAN teknik analiz göster"
 • "EREGL bilançosu ne zaman?"
