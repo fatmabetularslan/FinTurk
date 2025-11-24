@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import google.generativeai as genai
 from document_rag_agent import DocumentRAGAgent
-from technical_analysis import TechnicalAnalysisEngine
+from technical_analysis import TechnicalAnalysisEngine, SUPPORTED_SYMBOLS
 from simulation_parser import parse_simulation_query
 from financial_calendar import FinancialCalendar
 import uuid
@@ -1586,8 +1586,13 @@ def technical_analysis_page():
         st.error("Teknik analiz motoru kullanılamıyor.")
         return
     
+    if st.button("← Ana Sayfa", key="back_to_home_from_technical"):
+        st.session_state.page = "Ana Sayfa"
+        st.rerun()
+    
     # Hisse seçimi
-    symbol = st.selectbox("Hisse Seçin", ["KCHOL.IS", "THYAO.IS", "GARAN.IS", "AKBNK.IS"])
+    available_symbols = [f"{symbol}.IS" for symbol in SUPPORTED_SYMBOLS]
+    symbol = st.selectbox("Hisse Seçin", available_symbols, index=available_symbols.index("KCHOL.IS") if "KCHOL.IS" in available_symbols else 0)
     
     if st.button("Teknik Analiz Yap", type="primary", key="run_technical_analysis"):
         with st.spinner("Teknik analiz yapılıyor..."):
