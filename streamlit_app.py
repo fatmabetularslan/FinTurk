@@ -1060,7 +1060,7 @@ def main_page():
     st.markdown("### 🎯 Hızlı Analiz")
     with st.container():
         st.markdown('<div class="quick-analysis-card">', unsafe_allow_html=True)
-        col1, col2 = st.columns([3, 1])
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             selected_stock = st.selectbox(
@@ -1068,15 +1068,16 @@ def main_page():
                 ["KCHOL", "THYAO", "GARAN", "AKBNK", "ASELS", "EREGL", "SASA", "ISCTR", "BIMAS", "ALARK", "TUPRS", "PGSU", "KRMD", "TAVHL", "DOAS", "TOASO", "FROTO", "VESTL", "YAPI", "QNBFB", "HALKB", "VAKBN", "SISE", "KERVN"],
                 key="stock_selector"
             )
+        
+        with col2:
             analysis_type = st.selectbox(
                 "Analiz Türü",
                 ["Fiyat Tahmini", "Teknik Analiz", "Haber Analizi", "Simülasyon"],
                 key="analysis_type"
             )
         
-        with col2:
-            st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-            if st.button("Analiz Yap", type="primary", key="quick_analysis", use_container_width=True):
+        with col3:
+            if st.button("Analiz Yap", type="primary", key="quick_analysis"):
                 if analysis_type == "Fiyat Tahmini":
                     message = f"{selected_stock} fiyat tahmini yap"
                 elif analysis_type == "Teknik Analiz":
