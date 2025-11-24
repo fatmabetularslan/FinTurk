@@ -142,8 +142,15 @@ st.markdown("""
     .main-header {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #06b6d4;
+        color: #083d77;
         text-align: center;
+        margin-bottom: 1rem;
+    }
+    .tagline {
+        text-align: center;
+        color: #475569;
+        font-size: 1.3rem;
+        line-height: 1.8rem;
         margin-bottom: 2rem;
     }
     .chat-message {
@@ -946,7 +953,7 @@ def predict_price(model, df):
 
 def main_page():
     st.markdown('<h1 class="main-header">🤖 FınTurk Finansal Asistan</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: #666; font-size: 1.2rem; margin-bottom: 2rem;">Tüm BIST hisse senetleri için akıllı analiz ve yatırım tavsiyeleri</p>', unsafe_allow_html=True)
+    st.markdown('<p class="tagline">Tüm BIST hisse senetleri için akıllı analiz ve yatırım tavsiyeleri</p>', unsafe_allow_html=True)
     
     
     with st.sidebar:
@@ -1077,6 +1084,31 @@ def main_page():
             st.rerun()
     
     # Örnek sorular
+    st.markdown("""
+    <style>
+    .chip-button {
+        display: block;
+        margin-bottom: 0.75rem;
+    }
+    .chip-button button {
+        border-radius: 999px !important;
+        border: 1px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        font-size: 0.9rem !important;
+        padding: 0.45rem 1rem !important;
+        transition: all 0.15s ease-in-out !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+    }
+    .chip-button button:hover {
+        background-color: #0ea5e9 !important;
+        color: #ffffff !important;
+        border-color: #0ea5e9 !important;
+        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.35) !important;
+        transform: translateY(-2px);
+    }
+    </style>
+    """, unsafe_allow_html=True)
     st.markdown("### ⚡ Hazır Sorgular")
     
     example_questions = [
@@ -1121,19 +1153,35 @@ def main_page():
             st.markdown(f'<div class="chat-message bot-message"><strong>Asistan:</strong> {message["message"]}</div>', unsafe_allow_html=True)
     
     # Chat input
-    chat_input = st.text_input(
-        "Mesajınızı yazın...",
-        key="chat_input",
-        placeholder="Örn: KCHOL fiyat tahmini yap, teknik analiz göster, portföy simülasyonu...",
-        on_change=handle_chat_input_change,
-    )
+    input_col, button_col = st.columns([8, 1])
     
-    col1, col2 = st.columns([1, 4])
+    with input_col:
+        chat_input = st.text_input(
+            "Mesajınızı yazın...",
+            key="chat_input",
+            placeholder="Örn: KCHOL fiyat tahmini yap, teknik analiz göster, portföy simülasyonu...",
+            on_change=handle_chat_input_change,
+        )
     
-    with col1:
-        send_button = st.button("⬆️", type="primary", key="send_message")
-    
-    with col2:
+    with button_col:
+        st.markdown("""
+        <style>
+        div.chat-send button {
+            background-color: #ff4f58 !important;
+            color: #fff !important;
+            border-radius: 12px !important;
+            height: 3rem !important;
+            width: 3rem !important;
+            margin-top: 1.6rem !important;
+        }
+        div.chat-send button:hover {
+            opacity: 0.9 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown('<div class="chat-send">', unsafe_allow_html=True)
+        send_button = st.button("✈️", key="send_message", use_container_width=True, help="Gönder", type="primary")
+        st.markdown('</div>', unsafe_allow_html=True)
         clear_button = st.button("Temizle", key="clear_chat")
     
     # Mesaj gönderme
