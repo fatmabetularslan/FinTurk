@@ -11,6 +11,7 @@ from pathlib import Path
 import google.generativeai as genai
 from document_rag_agent import DocumentRAGAgent
 from technical_analysis import TechnicalAnalysisEngine
+from simulation_parser import parse_simulation_query
 from financial_calendar import FinancialCalendar
 import uuid
 import requests
@@ -30,7 +31,7 @@ except ImportError:
     # Streamlit Cloud'da dotenv yoksa environment variables kullan
     pass
 
-# Configure Gemini API
+
 GEMINI_API_KEY = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
@@ -80,7 +81,11 @@ except Exception as e:
 
 # Hisse simülasyon modülünü import et
 try:
-    from hisse_simulasyon import hisse_simulasyon
+    from hisse_simulasyon import (
+        hisse_simulasyon,
+        run_simulation_from_parsed_request,
+        SIMULATION_ERROR_MESSAGE,
+    )
     print("Hisse Simülasyon modülü başarıyla yüklendi")
 except Exception as e:
     print(f"Hisse Simülasyon modülü yüklenemedi: {e}")
@@ -103,6 +108,7 @@ except Exception as e:
     print(f"Financial Calendar yüklenemedi: {e}")
     financial_calendar = None
 
+# Initialize Financial Alert System
 # Initialize Financial Alert System
 try:
     from financial_alerts import FinancialAlertSystem
@@ -580,27 +586,27 @@ def create_model_explanation(X, features, predicted_price, current_price):
         
         explanations = []
         
-        # Fiyat verileri analizi
+        
         close_price = feature_values[features.index('close')]
         high_price = feature_values[features.index('high')]
         low_price = feature_values[features.index('low')]
         open_price = feature_values[features.index('open')]
         volume = feature_values[features.index('volume')]
         
-        # Teknik göstergeler
+       
         sma200 = feature_values[features.index('SMA200')]
         rsi = feature_values[features.index('RSI')]
         atr = feature_values[features.index('ATR')]
         bbwidth = feature_values[features.index('BBWidth')]
         williams = feature_values[features.index('Williams')]
         
-        # Fiyat pozisyonu analizi
+       
         if close_price > sma200:
             explanations.append(f"Kapanış fiyatı ({close_price:.2f} TL) 200 günlük ortalamanın ({sma200:.2f} TL) üzerinde - Yükseliş trendi")
         else:
             explanations.append(f"Kapanış fiyatı ({close_price:.2f} TL) 200 günlük ortalamanın ({sma200:.2f} TL) altında - Düşüş trendi")
         
-        # RSI analizi
+       
         if rsi > 70:
             explanations.append(f"RSI ({rsi:.1f}) aşırı alım bölgesinde - Düşüş riski")
         elif rsi < 30:
@@ -608,19 +614,19 @@ def create_model_explanation(X, features, predicted_price, current_price):
         else:
             explanations.append(f"RSI ({rsi:.1f}) nötr bölgede - Trend devam edebilir")
         
-        # Volatilite analizi
+        
         if atr > 5:
             explanations.append(f"Yüksek volatilite (ATR: {atr:.2f}) - Fiyat hareketleri büyük olabilir")
         else:
             explanations.append(f"Düşük volatilite (ATR: {atr:.2f}) - Fiyat hareketleri sınırlı olabilir")
         
-        # Bollinger Bant analizi
+       
         if bbwidth > 0.2:
             explanations.append(f"Geniş Bollinger Bantları ({bbwidth:.3f}) - Volatilite artıyor")
         else:
             explanations.append(f"Dar Bollinger Bantları ({bbwidth:.3f}) - Volatilite azalıyor")
         
-        # Williams %R analizi
+        
         if williams < -80:
             explanations.append(f"Williams %R ({williams:.1f}) aşırı satım - Yükseliş sinyali")
         elif williams > -20:
@@ -683,23 +689,23 @@ def predict_price(model, df):
         if missing_features:
             return None, f"Eksik özellikler: {missing_features}"
         
-        # Tahmin için veriyi hazırla
+        
         X = latest_data[features].values
         
-        # Tahmin yap
+        
         prediction = model.predict(X)[0]
         
         current_price = latest_data['close'].iloc[0]
         change = prediction - current_price
         change_percent = (change / current_price) * 100
         
-        # Tahmin tarihini hesapla (hafta sonu kontrolü ile)
+        
         tomorrow = datetime.now() + timedelta(days=1)
-        if tomorrow.weekday() >= 5:  # Cumartesi veya Pazar
+        if tomorrow.weekday() >= 5:  
             while tomorrow.weekday() >= 5:
                 tomorrow = tomorrow + timedelta(days=1)
         
-        # Model açıklaması oluştur
+        
         model_explanation = create_model_explanation(X, features, prediction, current_price)
         
         result = {
@@ -717,12 +723,12 @@ def predict_price(model, df):
         print(f"Tahmin hatası: {e}")
         return None, f"Tahmin hatası: {e}"
 
-# Ana sayfa - Chatbot
+
 def main_page():
     st.markdown('<h1 class="main-header">🤖 FınTurk Finansal Asistan</h1>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; color: #666; font-size: 1.2rem; margin-bottom: 2rem;">Tüm BIST hisse senetleri için akıllı analiz ve yatırım tavsiyeleri</p>', unsafe_allow_html=True)
     
-    # Sidebar - Hızlı Erişim
+    
     with st.sidebar:
         st.markdown("### Popüler Hisse Senetleri")
         
@@ -737,7 +743,7 @@ def main_page():
         
         for symbol, name in popular_stocks:
             if st.button(f"{symbol} - {name}", use_container_width=True, key=f"popular_{symbol}"):
-                # Doğrudan mesajı işle
+                
                 st.session_state.chat_history.append({
                     'sender': 'user',
                     'message': f"{symbol} fiyat tahmini yap",
@@ -756,7 +762,7 @@ def main_page():
         
         
         if st.button("📈 Fiyat Tahmini", use_container_width=True, key="quick_price_prediction"):
-            # Doğrudan mesajı işle
+           
             st.session_state.chat_history.append({
                 'sender': 'user',
                 'message': "KCHOL fiyat tahmini yap",
@@ -986,15 +992,46 @@ def main_page():
 
 def process_message(message):
     """Mesajı işle ve yanıt döndür"""
+    parsed_simulation = parse_simulation_query(message, gemini_model)
+    if parsed_simulation.get("is_simulation"):
+        if hisse_simulasyon:
+            try:
+                sim_result, sim_inputs = run_simulation_from_parsed_request(parsed_simulation)
+                if 'hata' not in sim_result:
+                    response = f"""**📊 {sim_result['hisse']} Hisse Senedi Simülasyon Sonucu**
+
+**Simülasyon Detayları:**
+• **Hisse:** {sim_result['hisse']}
+• **Başlangıç Tarihi:** {sim_result['başlangıç tarihi']}
+• **Yatırım Tutarı:** {sim_inputs['amount']:,.2f} TL
+
+**Fiyat Analizi:**
+• **Başlangıç Fiyatı:** {sim_result['başlangıç fiyatı']} TL
+• **Güncel Fiyat:** {sim_result['güncel fiyat']} TL
+• **Alınan Lot:** {sim_result['alınan lot']} adet
+
+**Sonuç:**
+• **Şu Anki Değer:** {sim_result['şu anki değer']:,.2f} TL
+• **Net Kazanç:** {sim_result['net kazanç']:,.2f} TL
+• **Getiri Oranı:** %{sim_result['getiri %']:.2f}
+
+{'🟢 **KARLILIK**' if sim_result['net kazanç'] > 0 else '🔴 **ZARAR**' if sim_result['net kazanç'] < 0 else '⚪ **BREAKEVEN**'}"""
+                else:
+                    response = sim_result['hata']
+                return response
+            except Exception as e:
+                print(f"Hisse simülasyonu hata aldı: {e}")
+                return SIMULATION_ERROR_MESSAGE
+        else:
+            return 'Hisse simülasyon sistemi şu anda kullanılamıyor.'
+
     message_lower = message.lower()
-    
-    # Model yükleme
-    model = load_model()
-    if model is None:
-        return 'Üzgünüm, model şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.'
     
     # Fiyat tahmini
     if any(word in message_lower for word in ['tahmin', 'fiyat', 'ne olacak', 'yükselir mi', 'düşer mi']):
+        model = load_model()
+        if model is None:
+            return 'Üzgünüm, model şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.'
         # Hisse kodunu mesajdan çıkar
         hisse_kodu = 'KCHOL'  # Varsayılan
         for symbol in ['KCHOL', 'THYAO', 'GARAN', 'AKBNK', 'ASELS', 'EREGL', 'SASA', 'ISCTR', 'BIMAS', 'ALARK', 'TUPRS', 'PGSU', 'KRMD', 'TAVHL', 'DOAS', 'TOASO', 'FROTO', 'VESTL', 'YAPI', 'QNBFB', 'HALKB', 'VAKBN', 'SISE', 'KERVN']:
@@ -1102,52 +1139,6 @@ Teknik analiz sonuçlarına göre, hisse senedinin **{result['predicted_price']:
                 return f'Teknik analiz yapılamadı: {str(e)}'
         else:
             return 'Teknik analiz motoru şu anda kullanılamıyor.'
-    
-    # Hisse simülasyonu
-    elif any(word in message_lower for word in ['simülasyon', 'simulasyon', 'simulation', 'ne olurdu', 'olurdu', 'kaç para']):
-        if hisse_simulasyon:
-            try:
-                # Hisse kodunu mesajdan çıkar
-                hisse_kodu = 'KCHOL'  # Varsayılan
-                for symbol in ['KCHOL', 'THYAO', 'GARAN', 'AKBNK', 'ASELS', 'EREGL', 'SASA', 'ISCTR', 'BIMAS', 'ALARK', 'TUPRS', 'PGSU', 'KRMD', 'TAVHL', 'DOAS', 'TOASO', 'FROTO', 'VESTL', 'YAPI', 'QNBFB', 'HALKB', 'VAKBN', 'SISE', 'KERVN']:
-                    if symbol.lower() in message_lower:
-                        hisse_kodu = symbol
-                        break
-                
-                # Simülasyon için hisse kodunu .IS ile birleştir
-                hisse_kodu_with_suffix = f"{hisse_kodu}.IS"
-                tarih = "6 ay önce"
-                tutar = 10000.0
-                
-                sim_result = hisse_simulasyon(hisse_kodu_with_suffix, tarih, tutar)
-                
-                if 'hata' not in sim_result:
-                    response = f"""**📊 {hisse_kodu} Hisse Senedi Simülasyon Sonucu**
-
-**Simülasyon Detayları:**
-• **Hisse:** {hisse_kodu}
-• **Başlangıç Tarihi:** {sim_result['başlangıç tarihi']}
-• **Yatırım Tutarı:** {tutar:,.2f} TL
-
-**Fiyat Analizi:**
-• **Başlangıç Fiyatı:** {sim_result['başlangıç fiyatı']} TL
-• **Güncel Fiyat:** {sim_result['güncel fiyat']} TL
-• **Alınan Lot:** {sim_result['alınan lot']} adet
-
-**Sonuç:**
-• **Şu Anki Değer:** {sim_result['şu anki değer']:,.2f} TL
-• **Net Kazanç:** {sim_result['net kazanç']:,.2f} TL
-• **Getiri Oranı:** %{sim_result['getiri %']:.2f}
-
-{'🟢 **KARLILIK**' if sim_result['net kazanç'] > 0 else '🔴 **ZARAR**' if sim_result['net kazanç'] < 0 else '⚪ **BREAKEVEN**'}"""
-                else:
-                    response = f"❌ Simülasyon hatası: {sim_result['hata']}"
-                
-                return response
-            except Exception as e:
-                return f'Hisse simülasyonu yapılamadı: {str(e)}'
-        else:
-            return 'Hisse simülasyon sistemi şu anda kullanılamıyor.'
     
     # Yardım
     elif any(word in message_lower for word in ['yardım', 'help', 'nasıl', 'ne yapabilir']):
