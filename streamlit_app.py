@@ -1167,22 +1167,44 @@ def main_page():
         st.markdown("""
         <style>
         div[data-testid="chat-send"] button {
-            background-color: #4b5563 !important;
-            color: #111827 !important;
-            border-radius: 8px !important;
-            height: 2.5rem !important;
-            width: 2.5rem !important;
-            margin-top: 1.8rem !important;
+            background-color: #d4d4d4 !important;
+            border-radius: 50% !important;
+            height: 34px !important;
+            width: 34px !important;
+            margin-top: 1.6rem !important;
             border: none !important;
-            font-size: 1.2rem !important;
+            padding: 0 !important;
+            position: relative !important;
         }
         div[data-testid="chat-send"] button:hover {
-            background-color: #374151 !important;
+            background-color: #bfbfbf !important;
+        }
+        div[data-testid="chat-send"] button::before {
+            content: "" !important;
+            position: absolute !important;
+            top: 9px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-left: 5px solid transparent !important;
+            border-right: 5px solid transparent !important;
+            border-bottom: 9px solid #111 !important;
+        }
+        div[data-testid="chat-send"] button::after {
+            content: "" !important;
+            position: absolute !important;
+            top: 18px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 2px !important;
+            height: 8px !important;
+            background: #111 !important;
         }
         </style>
         """, unsafe_allow_html=True)
         st.markdown('<div data-testid="chat-send">', unsafe_allow_html=True)
-        send_button = st.button("▲", key="send_message", help="Gönder")
+        send_button = st.button("", key="send_message", help="Gönder")
         st.markdown('</div>', unsafe_allow_html=True)
         clear_button = st.button("Temizle", key="clear_chat")
     
