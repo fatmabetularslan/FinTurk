@@ -1026,7 +1026,7 @@ def main_page():
     
     # Hisse seçici ve hızlı erişim
     st.markdown("### 🎯 Hızlı Analiz")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.5, 1.5, 0.6])
     
     with col1:
         selected_stock = st.selectbox(
@@ -1043,6 +1043,7 @@ def main_page():
         )
     
     with col3:
+        st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
         if st.button("Analiz Yap", type="primary", key="quick_analysis"):
             if analysis_type == "Fiyat Tahmini":
                 message = f"{selected_stock} fiyat tahmini yap"
