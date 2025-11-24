@@ -44,6 +44,13 @@ else:
 # News API Configuration
 NEWS_API_KEY = os.getenv('NEWS_API_KEY', '67b1d8b38f8b4ba8ba13fada3b9deac1')
 NEWS_API_URL = "https://newsapi.org/v2/everything"
+NEWS_QUERY_MAP = {
+    "KCHOL": ["KCHOL", "Koç Holding", "Arçelik", "Tofaş", "Ford Otosan", "Yapı Kredi"],
+    "GARAN": ["GARAN", "Garanti BBVA", "Garanti Bankası", "BBVA Türkiye"],
+    "AKBNK": ["AKBNK", "Akbank", "Sabancı Holding bankacılık"],
+    "THYAO": ["THYAO", "Türk Hava Yolları", "THY"],
+    "ASELS": ["ASELS", "Aselsan", "Savunma Sanayi Aselsan"],
+}
 
 # Initialize Document RAG Agent
 try:
@@ -242,20 +249,16 @@ Lütfen aşağıdaki kurallara uygun olarak yanıt ver:
 
 
 # Haber analizi yardımcıları
-def get_news_articles(base_query="KCHOL", days=7):
+def get_news_articles(symbol="KCHOL", days=7):
     try:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
 
-        search_queries = [
-            base_query,
-            f"{base_query} haber",
-            "Koç Holding",
-            "Arçelik",
-            "Tofaş",
-            "Ford Otosan",
-            "Yapı Kredi",
-        ]
+        base_symbol = (symbol or "KCHOL").upper().replace(".IS", "")
+        search_queries = NEWS_QUERY_MAP.get(
+            base_symbol,
+            [base_symbol, f"{base_symbol} haber", f"{base_symbol} hisse"]
+        )
 
         all_articles = []
 
