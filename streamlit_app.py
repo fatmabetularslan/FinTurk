@@ -1024,85 +1024,50 @@ def main_page():
             st.session_state.page = "Alarm Yönetimi"
             st.rerun()
     
-    st.markdown("""
-    <style>
-    .quick-analysis-card {
-        background: #f8fafc;
-        border-radius: 18px;
-        padding: 1.5rem 1.75rem;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-        margin-bottom: 2rem;
-    }
-    .quick-analysis-card label {
-        font-weight: 600;
-        color: #0f172a !important;
-    }
-    .chip-button button {
-        border-radius: 999px !important;
-        border: 1px solid #e2e8f0 !important;
-        background-color: #f1f5f9 !important;
-        color: #0f172a !important;
-        font-size: 0.9rem !important;
-        padding: 0.35rem 0.8rem !important;
-        transition: all 0.2s ease-in-out;
-    }
-    .chip-button button:hover {
-        background-color: #0ea5e9 !important;
-        color: #ffffff !important;
-        border-color: #0ea5e9 !important;
-        box-shadow: 0 6px 14px rgba(14, 165, 233, 0.35);
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
     # Hisse seçici ve hızlı erişim
     st.markdown("### 🎯 Hızlı Analiz")
-    with st.container():
-        st.markdown('<div class="quick-analysis-card">', unsafe_allow_html=True)
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            selected_stock = st.selectbox(
-                "Hisse Seçin",
-                ["KCHOL", "THYAO", "GARAN", "AKBNK", "ASELS", "EREGL", "SASA", "ISCTR", "BIMAS", "ALARK", "TUPRS", "PGSU", "KRMD", "TAVHL", "DOAS", "TOASO", "FROTO", "VESTL", "YAPI", "QNBFB", "HALKB", "VAKBN", "SISE", "KERVN"],
-                key="stock_selector"
-            )
-        
-        with col2:
-            analysis_type = st.selectbox(
-                "Analiz Türü",
-                ["Fiyat Tahmini", "Teknik Analiz", "Haber Analizi", "Simülasyon"],
-                key="analysis_type"
-            )
-        
-        with col3:
-            if st.button("Analiz Yap", type="primary", key="quick_analysis"):
-                if analysis_type == "Fiyat Tahmini":
-                    message = f"{selected_stock} fiyat tahmini yap"
-                elif analysis_type == "Teknik Analiz":
-                    message = f"{selected_stock} teknik analiz yap"
-                elif analysis_type == "Haber Analizi":
-                    message = f"{selected_stock} haber analizi yap"
-                elif analysis_type == "Simülasyon":
-                    message = f"{selected_stock}'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?"
-                
-                st.session_state.chat_history.append({
-                    'sender': 'user',
-                    'message': message,
-                    'timestamp': datetime.now()
-                })
-                
-                with st.spinner("Düşünüyorum..."):
-                    bot_response = process_message(message)
-                
-                st.session_state.chat_history.append({
-                    'sender': 'bot',
-                    'message': bot_response,
-                    'timestamp': datetime.now()
-                })
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        selected_stock = st.selectbox(
+            "Hisse Seçin",
+            ["KCHOL", "THYAO", "GARAN", "AKBNK", "ASELS", "EREGL", "SASA", "ISCTR", "BIMAS", "ALARK", "TUPRS", "PGSU", "KRMD", "TAVHL", "DOAS", "TOASO", "FROTO", "VESTL", "YAPI", "QNBFB", "HALKB", "VAKBN", "SISE", "KERVN"],
+            key="stock_selector"
+        )
+    
+    with col2:
+        analysis_type = st.selectbox(
+            "Analiz Türü",
+            ["Fiyat Tahmini", "Teknik Analiz", "Haber Analizi", "Simülasyon"],
+            key="analysis_type"
+        )
+    
+    with col3:
+        if st.button("Analiz Yap", type="primary", key="quick_analysis"):
+            if analysis_type == "Fiyat Tahmini":
+                message = f"{selected_stock} fiyat tahmini yap"
+            elif analysis_type == "Teknik Analiz":
+                message = f"{selected_stock} teknik analiz yap"
+            elif analysis_type == "Haber Analizi":
+                message = f"{selected_stock} haber analizi yap"
+            elif analysis_type == "Simülasyon":
+                message = f"{selected_stock}'a 6 ay önce 10.000 TL yatırsaydım ne olurdu?"
+            
+            st.session_state.chat_history.append({
+                'sender': 'user',
+                'message': message,
+                'timestamp': datetime.now()
+            })
+            
+            with st.spinner("Düşünüyorum..."):
+                bot_response = process_message(message)
+            
+            st.session_state.chat_history.append({
+                'sender': 'bot',
+                'message': bot_response,
+                'timestamp': datetime.now()
+            })
+            st.rerun()
     
     # Örnek sorular
     st.markdown("### ⚡ Hazır Sorgular")
