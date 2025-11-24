@@ -1169,37 +1169,17 @@ def main_page():
         div[data-testid="chat-send"] button {
             background-color: #d4d4d4 !important;
             border-radius: 50% !important;
-            height: 34px !important;
-            width: 34px !important;
-            margin-top: 1.6rem !important;
-            border: none !important;
+            height: 36px !important;
+            width: 36px !important;
+            margin-top: 1.5rem !important;
+            border: 1px solid #c5c5c5 !important;
             padding: 0 !important;
-            position: relative !important;
+            background-image: url("data:image/svg+xml,%3Csvg width='14' height='20' viewBox='0 0 14 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 0l6 8H9v12H5V8H1l6-8z' fill='%23111827'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center 6px !important;
         }
         div[data-testid="chat-send"] button:hover {
-            background-color: #bfbfbf !important;
-        }
-        div[data-testid="chat-send"] button::before {
-            content: "" !important;
-            position: absolute !important;
-            top: 9px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 0 !important;
-            height: 0 !important;
-            border-left: 5px solid transparent !important;
-            border-right: 5px solid transparent !important;
-            border-bottom: 9px solid #111 !important;
-        }
-        div[data-testid="chat-send"] button::after {
-            content: "" !important;
-            position: absolute !important;
-            top: 18px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 2px !important;
-            height: 8px !important;
-            background: #111 !important;
+            background-color: #c5c5c5 !important;
         }
         </style>
         """, unsafe_allow_html=True)
