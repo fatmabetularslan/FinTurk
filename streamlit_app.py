@@ -1174,17 +1174,16 @@ def main_page():
             margin-top: 1.5rem !important;
             border: 1px solid #c5c5c5 !important;
             padding: 0 !important;
-            background-image: url("data:image/svg+xml,%3Csvg width='14' height='20' viewBox='0 0 14 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 0l6 8H9v12H5V8H1l6-8z' fill='%23111827'/%3E%3C/svg%3E") !important;
-            background-repeat: no-repeat !important;
-            background-position: center 6px !important;
+            font-size: 1.2rem !important;
+            color: #111 !important;
         }
         div[data-testid="chat-send"] button:hover {
             background-color: #c5c5c5 !important;
         }
         </style>
         """, unsafe_allow_html=True)
-        st.markdown('<div data-testid="chat-send">', unsafe_allow_html=True)
-        send_button = st.button("", key="send_message", help="Gönder")
+        st.markdown('<div data-testid="chat-send" style="text-align:center;">', unsafe_allow_html=True)
+        send_button = st.button("↑", key="send_message", help="Gönder")
         st.markdown('</div>', unsafe_allow_html=True)
         clear_button = st.button("Temizle", key="clear_chat")
     
