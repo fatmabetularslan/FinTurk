@@ -185,6 +185,12 @@ if 'current_session_id' not in st.session_state:
     st.session_state.current_session_id = str(uuid.uuid4())
 if 'portfolio_data' not in st.session_state:
     st.session_state.portfolio_data = {}
+if 'pending_message' not in st.session_state:
+    st.session_state.pending_message = None
+
+
+def handle_chat_input_change():
+    st.session_state.pending_message = st.session_state.chat_input
 
 # Model yükleme
 @st.cache_resource
@@ -1119,8 +1125,7 @@ def main_page():
         "Mesajınızı yazın...",
         key="chat_input",
         placeholder="Örn: KCHOL fiyat tahmini yap, teknik analiz göster, portföy simülasyonu...",
-        value="",
-        on_change=lambda: st.session_state.setdefault("pending_message", st.session_state.chat_input),
+        on_change=handle_chat_input_change,
     )
     
     col1, col2 = st.columns([1, 4])
@@ -1132,7 +1137,7 @@ def main_page():
         clear_button = st.button("Temizle", key="clear_chat")
     
     # Mesaj gönderme
-    pending_message = st.session_state.pop("pending_message", None) if "pending_message" in st.session_state else None
+    pending_message = st.session_state.pending_message
     trigger_message = chat_input if send_button else pending_message
     
     if trigger_message and trigger_message.strip():
@@ -1150,8 +1155,8 @@ def main_page():
             'message': bot_response,
             'timestamp': datetime.now()
         })
-        
         st.session_state.chat_input = ""
+        st.session_state.pending_message = None
         st.rerun()
     
     # Chat temizleme
