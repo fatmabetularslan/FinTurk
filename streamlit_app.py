@@ -1139,7 +1139,11 @@ def main_page():
         clear_button = st.button("Temizle", key="clear_chat")
     
     # Mesaj gönderme
-    trigger_message = st.session_state.pending_message if st.session_state.pending_message else chat_input if send_button else None
+    trigger_message = None
+    if st.session_state.pending_message:
+        trigger_message = st.session_state.pending_message
+    elif send_button:
+        trigger_message = chat_input
 
     if trigger_message and trigger_message.strip():
         st.session_state.chat_history.append({
