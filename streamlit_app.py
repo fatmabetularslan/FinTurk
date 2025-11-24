@@ -1153,7 +1153,30 @@ def main_page():
             st.markdown(f'<div class="chat-message bot-message"><strong>Asistan:</strong> {message["message"]}</div>', unsafe_allow_html=True)
     
     # Chat input
-    input_col, button_col = st.columns([7.5, 2.5])
+    st.markdown("""
+    <style>
+    .chat-send-wrapper button {
+        background-color: #d4d4d4 !important;
+        border-radius: 50% !important;
+        height: 36px !important;
+        width: 36px !important;
+        border: 1px solid #c5c5c5 !important;
+        padding: 0 !important;
+        font-size: 1.2rem !important;
+        color: #111 !important;
+    }
+    .chat-send-wrapper button:hover {
+        background-color: #c5c5c5 !important;
+    }
+    .clear-chat-wrapper button {
+        height: 40px !important;
+        border-radius: 20px !important;
+        padding: 0 18px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    input_col, send_col, clear_col = st.columns([7.5, 0.6, 1.6])
     
     with input_col:
         chat_input = st.text_input(
@@ -1163,44 +1186,14 @@ def main_page():
             on_change=handle_chat_input_change,
         )
     
-    with button_col:
-        st.markdown("""
-        <style>
-        div[data-testid="chat-controls"] {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        div[data-testid="chat-send"] button {
-            background-color: #d4d4d4 !important;
-            border-radius: 50% !important;
-            height: 36px !important;
-            width: 36px !important;
-            border: 1px solid #c5c5c5 !important;
-            padding: 0 !important;
-            font-size: 1.2rem !important;
-            color: #111 !important;
-            margin-top: 0 !important;
-        }
-        div[data-testid="chat-send"] button:hover {
-            background-color: #c5c5c5 !important;
-        }
-        div[data-testid="clear-chat-btn"] button {
-            height: 36px !important;
-            border-radius: 18px !important;
-            padding: 0 18px !important;
-            margin-top: 0 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        st.markdown('<div data-testid="chat-controls">', unsafe_allow_html=True)
-        st.markdown('<div data-testid="chat-send">', unsafe_allow_html=True)
+    with send_col:
+        st.markdown('<div class="chat-send-wrapper" style="display:flex; align-items:center; justify-content:center;">', unsafe_allow_html=True)
         send_button = st.button("↑", key="send_message", help="Gönder")
         st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('<div data-testid="clear-chat-btn">', unsafe_allow_html=True)
-        clear_button = st.button("Sohbeti Temizle", key="clear_chat")
-        st.markdown('</div>', unsafe_allow_html=True)
+
+    with clear_col:
+        st.markdown('<div class="clear-chat-wrapper" style="display:flex; align-items:center; justify-content:flex-start;">', unsafe_allow_html=True)
+        clear_button = st.button("Sohbeti Temizle", key="clear_chat", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     # Mesaj gönderme
