@@ -1168,12 +1168,13 @@ def main_page():
         <style>
         div[data-testid="chat-send"] button {
             background-color: #4b5563 !important;
-            color: #fff !important;
+            color: #111827 !important;
             border-radius: 8px !important;
             height: 2.5rem !important;
             width: 2.5rem !important;
             margin-top: 1.8rem !important;
             border: none !important;
+            font-size: 1.2rem !important;
         }
         div[data-testid="chat-send"] button:hover {
             background-color: #374151 !important;
@@ -1181,7 +1182,7 @@ def main_page():
         </style>
         """, unsafe_allow_html=True)
         st.markdown('<div data-testid="chat-send">', unsafe_allow_html=True)
-        send_button = st.button("⬆️", key="send_message", help="Gönder")
+        send_button = st.button("▲", key="send_message", help="Gönder")
         st.markdown('</div>', unsafe_allow_html=True)
         clear_button = st.button("Temizle", key="clear_chat")
     
