@@ -1182,13 +1182,18 @@ def main_page():
             div[data-testid="chat-send"] button:hover {
                 background-color: #c5c5c5 !important;
             }
+            div[data-testid="clear-chat-btn"] button {
+                margin-top: 1.3rem !important;
+            }
             </style>
             """, unsafe_allow_html=True)
             st.markdown('<div data-testid="chat-send" style="text-align:center;">', unsafe_allow_html=True)
             send_button = st.button("↑", key="send_message", help="Gönder")
             st.markdown('</div>', unsafe_allow_html=True)
         with clear_col:
+            st.markdown('<div data-testid="clear-chat-btn">', unsafe_allow_html=True)
             clear_button = st.button("Sohbeti Temizle", key="clear_chat", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     
     # Mesaj gönderme
     trigger_message = None
